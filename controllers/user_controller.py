@@ -20,3 +20,8 @@ def reset_password(data: ResetPassword):
             u["password"] = data.new_password
             return {"success": True,"status":200,"msg": "Password reset successful"}
     raise HTTPException(status_code=404,detail= "msg :" "User not found")
+
+
+
+
+
