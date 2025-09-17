@@ -1,70 +1,101 @@
 from fastapi import HTTPException
 
-users = [
-    {"id": 1, "name": "Noor", "followers": [], "following": []},
-    {"id": 2, "name": "Neha", "followers": [], "following": []}
+user_db = [
+    {"id": 1, "name": "Noor"},
+    {"id": 2, "name": "Neha"},
+    {"id": 3, "name": "Anku"},
+    {"id": 4, "name": "Harman"},
 ]
 
-def follow_user(data):
-    follower_id = data.follower_id
-    followee_id = data.followee_id
+follow = [{"followed_by": 1, "followed_to": 2}, {"followed_by": 3, "followed_to": 2}]
+block = [{"block_by": 2, "block_to": 1}, {"block_by": 2, "block_to": 3}]
 
-    if follower_id == followee_id:
-        raise HTTPException(status_code=400, detail="You cannot follow yourself")
 
-    follower = None
-    followee = None
+def followUser(data):
+    for i in follow:
+        if i["followed_by"] == data.followed_by and i["followed_to"] == data.followed_to:
+            return {"success": True, "status": 200, "msg": "You are already following this user."}
+    for user in user_db:
+        if user["id"] == data.followed_by:
+            for u in user_db:
+                if u["id"] == data.followed_to:
+                    follow.append(data.dict())
+                    return {"success": True, "status": 200, "msg": "User FOLLOWED successfully."}
+            raise HTTPException(status_code=400, detail="Target user NOT FOUND.")
+    raise HTTPException(status_code=400, detail="User not found.")
 
-    for u in users:
-        if u["id"] == follower_id:
-            follower = u
-        if u["id"] == followee_id:
-            followee = u
 
-    if follower is None or followee is None:
-        raise HTTPException(status_code=404, detail="User not found")
+def unFollowUser(data):
+    for i in follow:
+        if i["followed_by"] == data.followed_by and i["followed_to"] == data.followed_to:
+            follow.remove(i)
+            return {"success": True, "status": 200, "msg": "User UNFOLLOWED successfully."}
+    raise HTTPException(status_code=400, detail="You are NOT FOLLOWING this user.")
 
-    if followee_id in follower["following"]:
-        raise HTTPException(status_code=400, detail="Already following this user")
 
-    follower["following"].append(followee_id)
-    followee["followers"].append(follower_id)
+def checkFollowers(id):
+    users = []
+    for i in follow:
+        if i["followed_to"] == id:
+            users.append(i["followed_by"])
+    if len(users) > 0:
+        for u in block:
+            if u["block_to"] == id or u["block_by"] == id:
+                if u["block_to"] in users:
+                    users.remove(u["block_to"])
+                if u["block_by"] in users:
+                    users.remove(u["block_by"])
+    if len(users) > 0:
+        return {
+            "success": True,
+            "status": 200,
+            "msg": "Followers retrieved successfully.",
+            "total_followers": len(users),
+            "followers": users
+        }
+    raise HTTPException(status_code=200, detail="You DON'T HAVE any FOLLOWERS yet.")
 
-    return {
-        "success": True,
-        "msg": f"{follower['name']} is now following {followee['name']}",
-        "follower": follower,
-        "followee": followee
-    }
 
-def get_followers(user_id: int):
-    user = None
-    for u in users:
-        if u["id"] == user_id:
-            user = u
+def checkFollowing(id):
+    users = []
+    for i in follow:
+        if i["followed_by"] == id:
+            users.append(i["followed_to"])
+    if len(users) > 0:
+        for u in block:
+            if u["block_to"] == id or u["block_by"] == id:
+                if u["block_to"] in users:
+                    users.remove(u["block_to"])
+                if u["block_by"] in users:
+                    users.remove(u["block_by"])
+    if len(users) > 0:
+        return {
+            "success": True,
+            "status": 200,
+            "msg": "Following list retrieved SUCCESSFULLY.",
+            "total_following": len(users),
+            "following": users
+        }
+    raise HTTPException(status_code=200, detail="You are NOT FOLLOWED ANYONE yet.")
 
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
 
-    followers_list = []
-    for u in users:
-        if u["id"] in user["followers"]:
-            followers_list.append(u)
+def blockUser(data):
+    for i in block:
+        if i["block_by"] == data.block_by and i["block_to"] == data.block_to:
+            return {"success": True, "status": 200, "msg": "You have ALREADY BLOCKED this user."}
+    for user in user_db:
+        if user["id"] == data.block_by:
+            for u in user_db:
+                if u["id"] == data.block_to:
+                    block.append(data.dict())
+                    return {"success": True, "status": 200, "msg": "User BLOCKED successfully."}
+            raise HTTPException(status_code=400, detail="Target user NOT FOUND.")
+    raise HTTPException(status_code=400, detail="User NOT FOUND.")
 
-    return {"success": True, "user": user["name"], "followers": followers_list}
 
-def get_following(user_id: int):
-    user = None
-    for u in users:
-        if u["id"] == user_id:
-            user = u
-
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    following_list = []
-    for u in users:
-        if u["id"] in user["following"]:
-            following_list.append(u)
-
-    return {"success": True, "user": user["name"], "following": following_list}
+def unBlockUser(data):
+    for i in block:
+        if i["block_by"] == data.block_by and i["block_to"] == data.block_to:
+            block.remove(i)
+            return {"success": True, "status": 200, "msg": "User UNBLOCKED successfully."}
+    raise HTTPException(status_code=400, detail="You have NOT BLOCKED this user.")

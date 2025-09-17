@@ -1,20 +1,29 @@
 from fastapi import APIRouter
-from controllers.follow_controller import follow_user, get_followers, get_following
-from schemas.follow_schema import FollowCreate
+from controllers.follow_controller import followUser, unFollowUser, checkFollowers, checkFollowing, blockUser, unBlockUser
+from schemas.follow_schema import FollowSchema, BlockSchema
 
 router = APIRouter()
 
-# Follow API
 @router.post("/follow")
-def follow(data: FollowCreate):
-    return follow_user(data)
+def follow_user(followdata: FollowSchema):
+    return followUser(followdata)
 
-# Get Followers API
-@router.get("/followers/{user_id}")
-def followers(user_id: int):
-    return get_followers(user_id)
+@router.patch("/unfollow")
+def unfollow_user(followdata: FollowSchema):
+    return unFollowUser(followdata)
 
-# Get Following API
-@router.get("/following/{user_id}")
-def following(user_id: int):
-    return get_following(user_id)
+@router.get("/followers/{id}")
+def followers(id: int):
+    return checkFollowers(id)
+
+@router.get("/following/{id}")
+def following(id: int):
+    return checkFollowing(id)
+
+@router.post("/blockuser")
+def block_user(blockdata: BlockSchema):
+    return blockUser(blockdata)
+
+@router.patch("/unblockuser")
+def unblock_user(blockdata: BlockSchema):
+    return unBlockUser(blockdata)
