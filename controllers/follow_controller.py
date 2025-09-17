@@ -4,7 +4,7 @@ user_db = [
     {"id": 1, "name": "Noor"},
     {"id": 2, "name": "Neha"},
     {"id": 3, "name": "Anku"},
-    {"id": 4, "name": "Harman"},
+    {"id": 4, "name": "Harman"}
 ]
 
 follow = [{"followed_by": 1, "followed_to": 2}, {"followed_by": 3, "followed_to": 2}]
