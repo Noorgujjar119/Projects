@@ -11,7 +11,7 @@ follow = [{"followed_by": 1, "followed_to": 2}, {"followed_by": 3, "followed_to"
 block = [{"block_by": 2, "block_to": 1}, {"block_by": 2, "block_to": 3}]
 
 
-def followUser(data):
+def Follow_User(data):
     for i in follow:
         if i["followed_by"] == data.followed_by and i["followed_to"] == data.followed_to:
             return {"success": True, "status": 200, "msg": "You are already following this user."}
@@ -25,7 +25,7 @@ def followUser(data):
     raise HTTPException(status_code=400, detail="User not found.")
 
 
-def unFollowUser(data):
+def Unfollow_User(data):
     for i in follow:
         if i["followed_by"] == data.followed_by and i["followed_to"] == data.followed_to:
             follow.remove(i)
@@ -33,7 +33,7 @@ def unFollowUser(data):
     raise HTTPException(status_code=400, detail="You are NOT FOLLOWING this user.")
 
 
-def checkFollowers(id):
+def Check_Followers(id):
     users = []
     for i in follow:
         if i["followed_to"] == id:
@@ -56,7 +56,7 @@ def checkFollowers(id):
     raise HTTPException(status_code=200, detail="You DON'T HAVE any FOLLOWERS yet.")
 
 
-def checkFollowing(id):
+def Check_Following(id):
     users = []
     for i in follow:
         if i["followed_by"] == id:
@@ -79,7 +79,7 @@ def checkFollowing(id):
     raise HTTPException(status_code=200, detail="You are NOT FOLLOWED ANYONE yet.")
 
 
-def blockUser(data):
+def Block_User(data):
     for i in block:
         if i["block_by"] == data.block_by and i["block_to"] == data.block_to:
             return {"success": True, "status": 200, "msg": "You have ALREADY BLOCKED this user."}
@@ -93,7 +93,7 @@ def blockUser(data):
     raise HTTPException(status_code=400, detail="User NOT FOUND.")
 
 
-def unBlockUser(data):
+def Unblock_User(data):
     for i in block:
         if i["block_by"] == data.block_by and i["block_to"] == data.block_to:
             block.remove(i)
